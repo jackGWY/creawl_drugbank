@@ -18,7 +18,8 @@ import pymysql
 
 
 def craw_drugbank(url):
-
+    conn = pymysql.Connect(host='127.0.0.1', port=3306, user='root', passwd='123456', db='paindatabase', charset='utf8')
+    cursor = conn.cursor()
     data = requests.get(url).text
     s = etree.HTML(data)
 
@@ -110,9 +111,10 @@ def craw_drugbank(url):
     f_drug.close()
 
     imgPath = 'https://www.drugbank.ca/structures/' + drugbank_id + '/thumb.svg'
-    f = open(".." + os.sep + "pic" + os.sep + drugbank_id + ".svg", 'wb')
-    f.write((urllib.request.urlopen(imgPath)).read())
-    f.close()
+    if os.path.exists(".." + os.sep + "pic" + os.sep + drugbank_id + ".svg"):
+        f = open(".." + os.sep + "pic" + os.sep + drugbank_id + ".svg", 'wb')
+        f.write((urllib.request.urlopen(imgPath)).read())
+        f.close()
     Structure = drugbank_id + '.svg'
     print(Structure)
 
@@ -174,10 +176,8 @@ def craw_drugbank(url):
     #         print(ATC_li_link)
 
 if __name__ == '__main__':
-    # import pymysql
-    # conn = pymysql.Connect(host='127.0.0.1', port=3306, user='root', passwd='123456', db='paindatabase', charset='utf8')
-    # conn.autocommit(False)
-    # cursor = conn.cursor()
+
+
     f1 = open('E:' + os.sep + 'paindatabase' + os.sep + 'creawl_drugbank' + os.sep + 'drugbank_id_distinc.txt', 'r')
     #url = 'https://www.drugbank.ca/drugs/DB01050'
     count_result=0
