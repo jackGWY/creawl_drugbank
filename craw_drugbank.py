@@ -127,16 +127,16 @@ def craw_drugbank(url):
     print('KEGG_Drug_link:', KEGG_Drug_link)
     result["KEGG_Drug_link"]=KEGG_Drug_link
 
-    # f_drug = open('E:' + os.sep + 'paindatabase' + os.sep + 'creawl_drugbank'
-    #               + os.sep + 'KEGG_Drug_link.txt', 'a')
-    # f_drug.writelines(KEGG_Drug_name+" "+KEGG_Drug_link +" "+ drugbank_id+" "+url+'\n')
-    # f_drug.close()
+    f_drug = open('KEGG_Drug_link.txt', 'a')
+    f_drug.writelines(KEGG_Drug+" "+KEGG_Drug_link +" "+ drugbank_id+" "+url+'\n')
+    f_drug.close()
 
     imgPath = 'https://www.drugbank.ca/structures/' + drugbank_id + '/thumb.svg'
-    # if os.path.exists(".." + os.sep + "pic" + os.sep + drugbank_id + ".svg"):
-    #     f = open(".." + os.sep + "pic" + os.sep + drugbank_id + ".svg", 'wb')
-    #     f.write((urllib.request.urlopen(imgPath)).read())
-    #     f.close()
+    if not os.path.exists(".." + os.sep + "pic" + os.sep + drugbank_id + ".svg"):
+        f = open(".." + os.sep + "pic" + os.sep + drugbank_id + ".svg", 'wb')
+        time.sleep(10)
+        f.write((urllib.request.urlopen(imgPath)).read())
+        f.close()
     Structure = drugbank_id + '.svg'
     print(Structure)
     result["Structure"]=Structure
@@ -338,18 +338,36 @@ def craw_drugbank(url):
         conn.rollback()
         time.sleep(10)
 
+def get_drugbank_link_exist():
+    result=[]
+    f=open("drugbank_link_exist.txt","r")
+    for line in f.readlines():
+        if line=="\n":
+            continue
+        result.append(line.strip())
+    f.close()
+    return result
 if __name__ == '__main__':
-    f1 = open('E:' + os.sep + 'paindatabase' + os.sep + 'creawl_drugbank' + os.sep + 'KEGG_Drug_link.txt', 'r')
+    f1 = open('drugbank_link_distinc.txt', 'r')
     #url = 'https://www.drugbank.ca/drugs/DB01050'
+    drugbank_link_exist_list=get_drugbank_link_exist()
     count_result=0
     for line in f1.readlines():
         #print(line.strip())
-        line=line.split(" ")[3]
+        #line=line.split(" ")[3]
+        if line=='\n':
+            continue
         url=line.strip()
+
         #url='https://www.drugbank.ca/drugs/'+line.strip()
         print("@@@@@@@@@@@@@@@")
         print("url:",url)
+        if url in drugbank_link_exist_list:
+            continue
         craw_drugbank(url)
+        f_exist=open("drugbank_link_exist.txt","a")
+        f_exist.write(url+"\n")
+        f_exist.close()
         count_result=count_result+1
     print(count_result)
     #craw_drugbank(url)
